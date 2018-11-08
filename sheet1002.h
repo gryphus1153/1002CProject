@@ -32,7 +32,7 @@
 typedef struct {
 	int cols;
 	int rows;
-	/* insert other data here as necessary */
+	char sheet[TERMINAL_ROWS][26][MAX_WORD];
 } WORKSHEET;
  
  
@@ -70,5 +70,7 @@ WORKSHEET *ws_new(int cols, int rows);
 int ws_read_csv(WORKSHEET *ws, FILE *f);
 void ws_set(WORKSHEET *ws, int col, int row, const char *value);
 int ws_write_csv(WORKSHEET *ws, FILE *f);
+
+WORKSHEET ws_curr;
 
 #endif

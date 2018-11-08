@@ -23,9 +23,28 @@
  *   term_rows - the height of the space in which to display the window, in characters
  */
 void viewport_display(int term_cols, int term_rows) {
+	fflush(stdout);
+	if (term_rows > ws_curr.rows)
+		term_rows = ws_curr.rows;
+	
+	if (term_cols > ws_curr.cols)
+		term_cols = ws_curr.cols;
 
+	for(int i = 0; i < term_cols; i++)
+	{
+		printf("%2c ", 'A'+i);
+	}
+	
+	for(int i = 0; i < term_rows; i++)
+	{
+		printf("%d", i+1);
+		for(int j = 0; j < term_cols; j++)
+		{
+			printf("%10s ", ws_curr.sheet[i][j]);
+		}
+		printf("\n");
+	}
 }
-
 
 /*
  * Get the precisiion with which floating-point numbers will be displayed.
