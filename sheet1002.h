@@ -28,11 +28,13 @@
 #define WS_DATA_TYPE_TEXT     1
 #define WS_DATA_TYPE_FLOAT    2
 
+#define MAX_COLS 26
+
 /* a structure for representing a worksheet */
 typedef struct {
 	int cols;
 	int rows;
-	char sheet[TERMINAL_ROWS][26][MAX_WORD];
+	char *** sheet;
 } WORKSHEET;
  
  
@@ -70,6 +72,8 @@ WORKSHEET *ws_new(int cols, int rows);
 int ws_read_csv(WORKSHEET *ws, FILE *f);
 void ws_set(WORKSHEET *ws, int col, int row, const char *value);
 int ws_write_csv(WORKSHEET *ws, FILE *f);
+
+void test();
 
 WORKSHEET ws_curr;
 

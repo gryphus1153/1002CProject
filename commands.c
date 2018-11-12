@@ -21,7 +21,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "sheet1002.h"
- 
+
 /*
  * Execute a command.
  *
@@ -35,15 +35,17 @@
  *   0, if the program should continue
  *   1, if the command indicates that the interpreter should exit
  */
-int do_command(const char *command, const char *arg1, const char *arg2, char *output) {
+int do_command(const char *command, const char *arg1, const char *arg2, char *output)
+{
 
-	int done = 0;	/* return value */
+	int done = 0; /* return value */
 
-	if (command == NULL || strlen(command) == 0) {
+	if (command == NULL || strlen(command) == 0)
+	{
 		/* blank line; do nothing and return */
 		return 0;
 	}
-	
+
 	/* determine which command was given and execute the appropriate function */
 	if (compare_token(command, "avg") == 0)
 		do_avg(arg1, arg2, output);
@@ -67,11 +69,9 @@ int do_command(const char *command, const char *arg1, const char *arg2, char *ou
 		done = 1;
 	else
 		snprintf(output, MAX_OUTPUT, "Unrecognised command: %s.", command);
-	
-	return done;
-	
-}
 
+	return done;
+}
 
 /*
  * AVG command.
@@ -80,12 +80,11 @@ int do_command(const char *command, const char *arg1, const char *arg2, char *ou
  *   arg1 - one corner of the rectangle to be averaged
  *   arg2 - the opposite corner of the rectangle to be averaged
  */
-void do_avg(const char *arg1, const char *arg2, char *output) {
-	
-	snprintf(output, MAX_OUTPUT, "Not implemented.");
-	
-}
+void do_avg(const char *arg1, const char *arg2, char *output)
+{
 
+	snprintf(output, MAX_OUTPUT, "Not implemented.");
+}
 
 /*
  * CURSOR command.
@@ -93,12 +92,11 @@ void do_avg(const char *arg1, const char *arg2, char *output) {
  * Input:
  *   arg1 - the identifier of the cell to which to move the cursor
  */
-void do_cursor(const char *arg1, char *output) {
-	
-	snprintf(output, MAX_OUTPUT, "Not implemented.");
-	
-}
+void do_cursor(const char *arg1, char *output)
+{
 
+	snprintf(output, MAX_OUTPUT, "Not implemented.");
+}
 
 /*
  * LOAD command.
@@ -106,12 +104,11 @@ void do_cursor(const char *arg1, char *output) {
  * Input:
  *   arg1 - the filename
  */
-void do_load(const char *arg1, char *output) {
-	
+void do_load(const char *arg1, char *output)
+{
+
 	snprintf(output, MAX_OUTPUT, "Not implemented.");
-
 }
-
 
 /*
  * NEW command.
@@ -120,12 +117,32 @@ void do_load(const char *arg1, char *output) {
  *   arg1 - the number of columns
  *   arg2 - the number of rows
  */
-void do_new(const char *arg1, const char *arg2, char *output) {
-	
-	snprintf(output, MAX_OUTPUT, "Not implemented.");
-	
-}
+void do_new(const char *arg1, const char *arg2, char *output)
+{
+	if (arg1 == 0x0 || arg2 == 0x0)
+	{
+		snprintf(output, MAX_OUTPUT, "Input is invalid");
+		return;
+	}
 
+	char *chk;
+	int cols = strtol(arg1, &chk, 10);
+	if (chk != "")
+	{
+		snprintf(output, MAX_OUTPUT, "Input is invalid");
+	}
+
+	int rows = strtol(arg2, &chk, 10);
+	if (chk != "")
+	{
+		snprintf(output, MAX_OUTPUT, "Input is invalid");
+	}
+
+	if (ws_new(cols, rows) == NULL)
+		snprintf(output, MAX_OUTPUT, "Input is invalid");
+	else
+		snprintf(output, MAX_OUTPUT, "New Worksheet Created");
+}
 
 /*
  * PREC command.
@@ -133,12 +150,11 @@ void do_new(const char *arg1, const char *arg2, char *output) {
  * Input:
  *   arg1 - the number of decimal places to show
  */
-void do_prec(const char *arg1, char *output) {
-	
-	snprintf(output, MAX_OUTPUT, "Not implemented.");
-	
-}
+void do_prec(const char *arg1, char *output)
+{
 
+	snprintf(output, MAX_OUTPUT, "Not implemented.");
+}
 
 /*
  * SAVE command.
@@ -146,12 +162,11 @@ void do_prec(const char *arg1, char *output) {
  * Input:
  *  arg1 - the filename
  */
-void do_save(const char *arg1, char *output) {
-	
-	snprintf(output, MAX_OUTPUT, "Not implemented.");
-	
-}
+void do_save(const char *arg1, char *output)
+{
 
+	snprintf(output, MAX_OUTPUT, "Not implemented.");
+}
 
 /*
  * SET command.
@@ -160,12 +175,18 @@ void do_save(const char *arg1, char *output) {
  *   arg1 - the cell identifier
  *   arg2 - the value for the cell (NULL to make the cell blank)
  */
-void do_set(const char *arg1, const char *arg2, char *output) {
-	
-	snprintf(output, MAX_OUTPUT, "Not implemented.");
-	
-}
+void do_set(const char *arg1, const char *arg2, char *output)
+{
+	if (strlen(arg1) > 1 && isalpha(arg1[0]) && isalnum)
+	{
+		char col = arg1[0];
+		arg1++;
+		int num;
+		sscanf(arg1, "%d", num);
+	}
 
+	snprintf(output, MAX_OUTPUT, "Not implemented.");
+}
 
 /*
  * SUM command.
@@ -174,12 +195,11 @@ void do_set(const char *arg1, const char *arg2, char *output) {
  *   arg1 - one corner of the rectangle to be summed
  *   arg2 - the opposite corner of the rectangle to be summed
  */
-void do_sum(const char *arg1, const char *arg2, char *output) {
-	
-	snprintf(output, MAX_OUTPUT, "Not implemented.");
-	
-}
+void do_sum(const char *arg1, const char *arg2, char *output)
+{
 
+	snprintf(output, MAX_OUTPUT, "Not implemented.");
+}
 
 /*
  * WIDTH command.
@@ -187,8 +207,29 @@ void do_sum(const char *arg1, const char *arg2, char *output) {
  * Input:
  *   arg1 - the number of characters for each column
  */
-void do_width(const char *arg1, char *output) {
-	
+void do_width(const char *arg1, char *output)
+{
+
 	snprintf(output, MAX_OUTPUT, "Not implemented.");
-	
+}
+
+int *getGrid(const char *arg)
+{
+	if (!(strlen(arg) >= 2 && isalpha(arg[0])))
+	{
+		return NULL;
+	}
+
+	int col = (int)toupper(arg[0]) - 65;
+	arg++;
+	char *chk;
+	int row = strtol(arg, &chk, 10);
+
+	if (row == 0x0 || chk != "" || col > ws_curr.cols || row > ws_curr.rows)
+		return NULL;
+	else
+	{
+		int arr[2] = {col, row};
+		return arr;
+	}
 }

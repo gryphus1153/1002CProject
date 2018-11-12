@@ -11,7 +11,6 @@
 #include <string.h>
 #include "sheet1002.h"
 
-
 /*
  * Get the contents of a cell as a floating-point number.
  *
@@ -24,12 +23,11 @@
  *   a floating-point number with the value specified in the cell, if the cell contains a number
  *   NAN (defined in math.h), otherwise
  */
-float ws_cell_as_float(WORKSHEET *ws, int col, int row) {
-		
-		return NAN;
-	
-}
+float ws_cell_as_float(WORKSHEET *ws, int col, int row)
+{
 
+    return NAN;
+}
 
 /*
  * Get the contents of a cell a string.
@@ -45,14 +43,13 @@ float ws_cell_as_float(WORKSHEET *ws, int col, int row) {
  * Returns:
  *   buf
  */
-char *ws_cell_as_string(WORKSHEET *ws, int col, int row, int width, int prec, char *buf) {
-		
-	strcpy(buf, "");
-	
-	return buf;
-	
-}
+char *ws_cell_as_string(WORKSHEET *ws, int col, int row, int width, int prec, char *buf)
+{
 
+    strcpy(buf, "");
+
+    return buf;
+}
 
 /*
  * Guess the intended data type of a string, in the manner of Excel's "General"
@@ -75,12 +72,11 @@ char *ws_cell_as_string(WORKSHEET *ws, int col, int row, int width, int prec, ch
  *   WS_DATA_TYPE_TEXT, if the value appears to be text
  *   WS_DATA_TYPE_ILLEGAL, otherwise
  */
-int ws_guess_data_type(const char *value) {
-	
-	return WS_DATA_TYPE_TEXT;
-}
-		
+int ws_guess_data_type(const char *value)
+{
 
+    return WS_DATA_TYPE_TEXT;
+}
 
 /*
  * De-allocate the memory used by a worksheet.
@@ -88,10 +84,10 @@ int ws_guess_data_type(const char *value) {
  * Input:
  *   ws - a pointer to the worksheet to be de-allocated.
  */
-void ws_free(WORKSHEET *ws) {
-	
+void ws_free(WORKSHEET *ws)
+{
+    free(ws);
 }
-
 
 /*
  * Create a new worksheet.
@@ -104,14 +100,28 @@ void ws_free(WORKSHEET *ws) {
  *   a pointer to the new WORKSHEET structure, if successful
  *   NULL, if there was a memory allocation failure
  */
-WORKSHEET *ws_new(int cols, int rows) {
-	
-	return NULL;
-	 
+WORKSHEET *ws_new(int cols, int rows)
+{
+    if (cols > MAX_COLS)
+        return NULL;
+        
+    WORKSHEET new;
+    new.cols = cols;
+    new.rows = rows;
+    char*** sheet = (char ***)malloc(sizeof(char ***) * rows);
+    for (int r = 0; r < rows; r++)
+    {
+        sheet[r] = (char **)malloc(sizeof(char *) * cols);
+        for (int c = 0; c < cols; c++)
+        {
+            sheet[r][c] = (char *)malloc(sizeof(char) * MAX_WORD);
+        }
+    }
+    new.sheet = sheet;
+    ws_curr = new;
+    return &ws_curr;
 }
- 
- 
- /*
+    /*
   * Read data from a CSV file.
   *
   * If the data in the file has more columns or rows than the worksheet
@@ -130,13 +140,13 @@ WORKSHEET *ws_new(int cols, int rows) {
   * Returns:
   *   the number of rows successfully read and inserted into the worksheet (may be less than the number of rows in the file)
   */
-int ws_read_csv(WORKSHEET *ws, FILE *f) {
-	
-	return 0;
-}
- 
- 
- /*
+        int ws_read_csv(WORKSHEET * ws, FILE * f)
+        {
+
+            return 0;
+        }
+
+        /*
   * Set the value of a cell.
   *
   * Input:
@@ -145,12 +155,11 @@ int ws_read_csv(WORKSHEET *ws, FILE *f) {
   *   row - the row number of the cell
   *   value - the new value of the cell (NULL to erase)
   */
-void ws_set(WORKSHEET *ws, int col, int row, const char *value) {
-	
-}
+        void ws_set(WORKSHEET * ws, int col, int row, const char *value)
+        {
+        }
 
-
-/*
+        /*
  * Write a worksheet to a CSV file.
  *
  * Input:
@@ -160,7 +169,8 @@ void ws_set(WORKSHEET *ws, int col, int row, const char *value) {
  * Returns:
  *   the number of rows successfully written
  */
-int ws_write_csv(WORKSHEET *ws, FILE *f) {
-	
-	return 0;
-}
+        int ws_write_csv(WORKSHEET * ws, FILE * f)
+        {
+
+            return 0;
+        }

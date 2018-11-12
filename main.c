@@ -18,7 +18,6 @@
   * Main loop.
   */
 int main(char *argv[], int argc) {
-
 	int num_tokens;				/* the number of tokens in the input */
 	char command[MAX_INPUT];	/* buffer for holding the command */
 	char arg1[MAX_INPUT];		/* buffer for holding the first argument */
