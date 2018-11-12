@@ -177,15 +177,17 @@ void do_save(const char *arg1, char *output)
  */
 void do_set(const char *arg1, const char *arg2, char *output)
 {
-	if (strlen(arg1) > 1 && isalpha(arg1[0]) && isalnum)
+	int *arr1;
+	arr1 = getGrid(arg1);
+	if (arr1 == NULL)
 	{
-		char col = arg1[0];
-		arg1++;
-		int num;
-		sscanf(arg1, "%d", num);
+		snprintf(output, MAX_OUTPUT, "Input was invalid");
 	}
-
-	snprintf(output, MAX_OUTPUT, "Not implemented.");
+	else
+	{
+		strcpy(ws_curr.sheet[arr1[0]][arr1[1]], arg2);
+	}
+	
 }
 
 /*
@@ -213,6 +215,13 @@ void do_width(const char *arg1, char *output)
 	snprintf(output, MAX_OUTPUT, "Not implemented.");
 }
 
+/*
+ * GET GRID
+ * Input:
+ * 	arg - the grid in format (Letter)(Number) e.g. A5, Z15
+ * Output:
+ *  arr - an array of {column, row} OR NULL if error
+ */
 int *getGrid(const char *arg)
 {
 	if (!(strlen(arg) >= 2 && isalpha(arg[0])))
@@ -225,11 +234,13 @@ int *getGrid(const char *arg)
 	char *chk;
 	int row = strtol(arg, &chk, 10);
 
-	if (row == 0x0 || chk != "" || col > ws_curr.cols || row > ws_curr.rows)
+	if (row == 0x0 || *chk != 0x0 || col > ws_curr.cols || row > ws_curr.rows)
 		return NULL;
 	else
 	{
-		int arr[2] = {col, row};
+		static int arr[2];
+		arr[0] = col;
+		arr[1] = row;
 		return arr;
 	}
 }

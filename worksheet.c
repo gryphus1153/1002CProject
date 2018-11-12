@@ -104,7 +104,7 @@ WORKSHEET *ws_new(int cols, int rows)
 {
     if (cols > MAX_COLS)
         return NULL;
-        
+
     WORKSHEET new;
     new.cols = cols;
     new.rows = rows;
@@ -114,9 +114,10 @@ WORKSHEET *ws_new(int cols, int rows)
         sheet[r] = (char **)malloc(sizeof(char *) * cols);
         for (int c = 0; c < cols; c++)
         {
-            sheet[r][c] = (char *)malloc(sizeof(char) * MAX_WORD);
+            sheet[r][c] = (char *)calloc(MAX_WORD, sizeof(char));
         }
     }
+    
     new.sheet = sheet;
     ws_curr = new;
     return &ws_curr;

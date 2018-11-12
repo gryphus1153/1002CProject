@@ -41,7 +41,7 @@ void viewport_display(int term_cols, int term_rows) {
 		printf("%d", i+1);
 		for(int j = 0; j < term_cols; j++)
 		{
-			printf("%5s ");
+			printf("%5s ", ws_curr.sheet[i][j]);
 		}
 		printf("\n");
 	}
