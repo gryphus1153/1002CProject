@@ -108,13 +108,13 @@ WORKSHEET *ws_new(int cols, int rows)
     WORKSHEET new;
     new.cols = cols;
     new.rows = rows;
-    char*** sheet = (char ***)malloc(sizeof(char ***) * rows);
-    for (int r = 0; r < rows; r++)
+    char*** sheet = (char ***)malloc(sizeof(char ***) * cols);
+    for (int c = 0; c < cols; c++)
     {
-        sheet[r] = (char **)malloc(sizeof(char *) * cols);
-        for (int c = 0; c < cols; c++)
+        sheet[c] = (char **)malloc(sizeof(char *) * rows);
+        for (int r = 0; r < rows; r++)
         {
-            sheet[r][c] = (char *)calloc(MAX_WORD, sizeof(char));
+            sheet[c][r] = (char *)calloc(MAX_WORD, sizeof(char));
         }
     }
     

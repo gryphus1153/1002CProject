@@ -179,7 +179,7 @@ void do_set(const char *arg1, const char *arg2, char *output)
 {
 	int *arr1;
 	arr1 = getGrid(arg1);
-	if (arr1 == NULL)
+	if (arr1 == NULL || arg2 == 0x0)
 	{
 		snprintf(output, MAX_OUTPUT, "Input was invalid");
 	}
@@ -240,7 +240,7 @@ int *getGrid(const char *arg)
 	{
 		static int arr[2];
 		arr[0] = col;
-		arr[1] = row;
+		arr[1] = row - 1;
 		return arr;
 	}
 }

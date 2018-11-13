@@ -36,12 +36,12 @@ void viewport_display(int term_cols, int term_rows) {
 	}
 	printf("\n");
 	
-	for(int i = 0; i < term_rows; i++)
+	for(int r = 0; r < term_rows; r++)
 	{
-		printf("%d", i+1);
-		for(int j = 0; j < term_cols; j++)
+		printf("%d", r+1);
+		for(int c = 0; c < term_cols; c++)
 		{
-			printf("%5s ", ws_curr.sheet[i][j]);
+			printf("%5s ", ws_curr.sheet[c][r]);
 		}
 		printf("\n");
 	}
