@@ -106,8 +106,98 @@ void do_cursor(const char *arg1, char *output)
  */
 void do_load(const char *arg1, char *output)
 {
+	//check if there is no filename
+	if (arg1 == 0x0)
+	{
+		snprintf(output, MAX_OUTPUT, "No filename entered.\n");
+		return;
+	}
 
-	snprintf(output, MAX_OUTPUT, "Not implemented.");
+	//open csv file
+	FILE *f = fopen(arg1, "rb");
+
+	//return if the program could not open the csv file
+	if (f == NULL) {
+		snprintf(output, MAX_OUTPUT, "Unable to load file.\n");
+		return;
+	}
+
+	//Check the maximum number of rows and columns
+	int rows = 0, cols = 0;
+	char ch[99999];
+	fscanf(f, "%s", &ch);
+	while (!feof(f))
+	{
+		rows++;
+		char * pch;
+		int col = 0;
+		
+		//Check all rows for maximum number of columns, delimited by comma
+		pch = strchr(&ch, ',');
+		while (pch != NULL)
+		{
+			col++;
+			pch = strchr(pch + 1, ',');
+		}
+		if (ch != '\n')
+				col++;
+		if (cols < col)
+			cols = col;
+		fscanf(f, "%s", &ch);
+	}
+
+	//create a new worksheet
+	WORKSHEET new;
+	new.cols = cols;
+	new.rows = rows;
+	char*** sheet = (char ***)malloc(sizeof(char ***) * cols);
+
+	//create a dynamic memory allocation for each cell
+	for (int c = 0; c < cols; c++)
+	{
+		sheet[c] = (char **)malloc(sizeof(char *) * rows);
+		for (int r = 0; r < rows; r++)
+		{
+			sheet[c][r] = (char *)calloc(MAX_WORD, sizeof(char));
+		}
+	}
+	
+	//to load data and write into sheet
+	rewind(f); //re-initialize the file pointer
+	for (int r = 0; r < rows; r++)
+	{
+		fscanf(f, "%s", &ch);
+		const char tok[] = ",";
+		char * tmp = (char *)ch;
+		char * teee = (char *)tmp;
+		size_t count;
+		for (count = 0; tmp[count]; tmp[count] == tok[0] ? count++ : *tmp++) {
+			//Empty loop body.
+		}
+		tmp = (char *)ch;
+		//copy each word into cell, delimited by comma
+		for (size_t i = 0, l = 0; i < count + 1; i++) {
+			l = strcspn(tmp, tok);
+			teee = (char *)tmp;
+			teee[l] = '\0';
+			strcpy(sheet[i][r], teee);
+	
+			tmp += sizeof(char) * (l + 1);
+		}
+	}
+
+	//save the content to ws_curr
+	new.sheet = sheet;
+	ws_curr = new;
+
+	//close csv file
+	fclose(f);
+
+	//Output: Sheet Loaded
+	snprintf(output, MAX_OUTPUT, "\n\nSheet Loaded.\n");
+
+	return &ws_curr;
+	   	  		
 }
 
 /*
@@ -164,8 +254,47 @@ void do_prec(const char *arg1, char *output)
  */
 void do_save(const char *arg1, char *output)
 {
+	//check if there is no filename
+	if (arg1 == 0x0)
+	{
+		snprintf(output, MAX_OUTPUT, "No filename entered.\n");
+		return;
+	}
 
-	snprintf(output, MAX_OUTPUT, "Not implemented.");
+	//create a csv file
+	FILE *f = fopen(arg1, "wb+");
+	//return if the program could not create the csv file
+	if (f == NULL) {
+		snprintf(output, MAX_OUTPUT, "Unable to create file.\n");
+		return;
+	}
+
+	//check the current number of rows and columns
+	int rows = ws_curr.rows;
+	int cols = ws_curr.cols;
+	
+	//write data into the csv file
+	for (int r = 0; r < rows; r++)
+	{
+		for (int c = 0; c < cols; c++)
+		{
+			fprintf(f, ws_curr.sheet[c][r]);
+			//insert comma as long as it is not the last column
+			if (c != cols-1) 
+				fprintf(f, ",");
+		}
+		//insert a newline as long as it is not the last row
+		if (r != rows - 1)
+			fprintf(f, "\n");
+	}
+
+	//close csv file
+	fclose(f);
+
+	//output: File Saved.
+	snprintf(output, MAX_OUTPUT, "\n\nFile Saved.\n");
+
+	return;
 }
 
 /*
@@ -186,6 +315,7 @@ void do_set(const char *arg1, const char *arg2, char *output)
 	else
 	{
 		strcpy(ws_curr.sheet[arr1[0]][arr1[1]], arg2);
+		snprintf(output, MAX_OUTPUT, "\n\nInput Updated.\n");
 	}
 	
 }
