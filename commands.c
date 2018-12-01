@@ -118,7 +118,7 @@ void do_load(const char *arg1, char *output)
 
 	//return if the program could not open the csv file
 	if (f == NULL) {
-		snprintf(output, MAX_OUTPUT, "Unable to load file.\n");
+		snprintf(output, MAX_OUTPUT, "Unable to load file. \nEnsure file exists and name does not contain spaces.\n");
 		return;
 	}
 
@@ -265,7 +265,7 @@ void do_save(const char *arg1, char *output)
 	FILE *f = fopen(arg1, "wb+");
 	//return if the program could not create the csv file
 	if (f == NULL) {
-		snprintf(output, MAX_OUTPUT, "Unable to create file.\n");
+		snprintf(output, MAX_OUTPUT, "Unable to save file.\nEnsure file is not opened in another program.\n");
 		return;
 	}
 
