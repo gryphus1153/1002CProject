@@ -25,8 +25,14 @@
  */
 float ws_cell_as_float(WORKSHEET *ws, int col, int row)
 {
+    char *index = ws->sheet[col][row];
+    char *chk;
+    float num = strtof(index, &chk);
 
-    return NAN;
+    if (chk != NULL)
+        return NAN;
+    else
+        return num;
 }
 
 /*
@@ -45,7 +51,6 @@ float ws_cell_as_float(WORKSHEET *ws, int col, int row)
  */
 char *ws_cell_as_string(WORKSHEET *ws, int col, int row, int width, int prec, char *buf)
 {
-
     strcpy(buf, "");
 
     return buf;
@@ -74,8 +79,7 @@ char *ws_cell_as_string(WORKSHEET *ws, int col, int row, int width, int prec, ch
  */
 int ws_guess_data_type(const char *value)
 {
-
-    return WS_DATA_TYPE_TEXT;
+    return WS_DATA_TYPE_ILLEGAL;
 }
 
 /*
@@ -86,7 +90,24 @@ int ws_guess_data_type(const char *value)
  */
 void ws_free(WORKSHEET *ws)
 {
-    free(ws);
+    if (ws != NULL)
+    {
+        for (int c = 0; c < ws->cols; c++)
+        {
+            for (int r = 0; r < ws->rows; r++)
+            {
+                free(ws->sheet[c][r]);
+            }
+            free(ws->sheet[c]);
+        }
+        free(ws->sheet);
+    }
+    ws->cols = 0;
+    ws->rows = 0;
+    ws->cell_width = 5;
+    ws->cell_prec = 0;
+    ws->currentCursor.row = 0;
+    ws->currentCursor.column = 0;
 }
 
 /*
@@ -104,25 +125,35 @@ WORKSHEET *ws_new(int cols, int rows)
 {
     if (cols > MAX_COLS)
         return NULL;
+    ws_free(&ws_curr);
 
     WORKSHEET new;
     new.cols = cols;
     new.rows = rows;
-    char*** sheet = (char ***)malloc(sizeof(char ***) * cols);
+    new.cell_width = 5;
+    new.cell_prec = 0;
+    new.currentCursor.row = 0;
+    new.currentCursor.column = 0;
+    char ***sheet = (char ***)malloc(sizeof(char ***) * cols);
     for (int c = 0; c < cols; c++)
     {
         sheet[c] = (char **)malloc(sizeof(char *) * rows);
+        if (sheet[c] == NULL)
+            return NULL;
         for (int r = 0; r < rows; r++)
         {
             sheet[c][r] = (char *)calloc(MAX_WORD, sizeof(char));
+            if (sheet[c][r] == NULL)
+                return NULL;
         }
     }
-    
+
     new.sheet = sheet;
     ws_curr = new;
+    viewport_set_worksheet(&ws_curr);
     return &ws_curr;
 }
-    /*
+/*
   * Read data from a CSV file.
   *
   * If the data in the file has more columns or rows than the worksheet
@@ -141,13 +172,13 @@ WORKSHEET *ws_new(int cols, int rows)
   * Returns:
   *   the number of rows successfully read and inserted into the worksheet (may be less than the number of rows in the file)
   */
-        int ws_read_csv(WORKSHEET * ws, FILE * f)
-        {
+int ws_read_csv(WORKSHEET *ws, FILE *f)
+{
 
-            return 0;
-        }
+    return 0;
+}
 
-        /*
+/*
   * Set the value of a cell.
   *
   * Input:
@@ -156,11 +187,11 @@ WORKSHEET *ws_new(int cols, int rows)
   *   row - the row number of the cell
   *   value - the new value of the cell (NULL to erase)
   */
-        void ws_set(WORKSHEET * ws, int col, int row, const char *value)
-        {
-        }
+void ws_set(WORKSHEET *ws, int col, int row, const char *value)
+{
+}
 
-        /*
+/*
  * Write a worksheet to a CSV file.
  *
  * Input:
@@ -170,8 +201,8 @@ WORKSHEET *ws_new(int cols, int rows)
  * Returns:
  *   the number of rows successfully written
  */
-        int ws_write_csv(WORKSHEET * ws, FILE * f)
-        {
+int ws_write_csv(WORKSHEET *ws, FILE *f)
+{
 
-            return 0;
-        }
+    return 0;
+}

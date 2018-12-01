@@ -22,6 +22,9 @@
 #include <string.h>
 #include "sheet1002.h"
 
+/* student's global variables */
+int AVERAGE = 0;
+
 /*
  * Execute a command.
  *
@@ -45,6 +48,10 @@ int do_command(const char *command, const char *arg1, const char *arg2, char *ou
 		/* blank line; do nothing and return */
 		return 0;
 	}
+	//if (arg1 == NULL) { /* validation for first parameter */
+	//	snprintf(output, MAX_OUTPUT, "\nFirst parameter cannot be empty.");
+	//	return 0;
+	//}
 
 	/* determine which command was given and execute the appropriate function */
 	if (compare_token(command, "avg") == 0)
@@ -82,8 +89,37 @@ int do_command(const char *command, const char *arg1, const char *arg2, char *ou
  */
 void do_avg(const char *arg1, const char *arg2, char *output)
 {
+	/* wrong input validation */
+	if (arg1 == NULL)
+	{
+		snprintf(output, MAX_OUTPUT, "\nFirst parameter cannot be empty.");
+		return;
+	}
+	if (arg2 == NULL)
+	{
+		snprintf(output, MAX_OUTPUT, "\nSecond parameter cannot be empty.");
+		return;
+	}
+	if (strlen(arg1) == 1 || strlen(arg2) == 1 ||
+		!isalpha(arg1[0]) || !isalpha(arg2[0]) || /* check for alphabet */
+		!checkInt(arg1 + 1) || !checkInt(arg2 + 1))
+	{ /* check for int */
+		snprintf(output, MAX_OUTPUT, "\nInvalid cell value.");
+		return;
+	}
 
-	snprintf(output, MAX_OUTPUT, "Not implemented.");
+	/* seperate cell value into alphabet and num */
+	int alpha1 = toupper(arg1[0]) - NUM_ALPHA_DIFF, alpha2 = toupper(arg2[0]) - NUM_ALPHA_DIFF, /* change alphabet to int */
+		num1 = atoi(&arg1[1]), num2 = atoi(&arg2[1]);
+
+	/* out of range validation */
+	if (alpha1 > ws_curr.cols - 1 || alpha2 > ws_curr.cols - 1 ||
+		num1 > ws_curr.rows || num2 > ws_curr.rows ||
+		num1 == 0 || num2 == 0)
+	{ /* check for 0th row (eg. A0) */
+		snprintf(output, MAX_OUTPUT, "\ncell value out of range.");
+		return;
+	}
 }
 
 /*
@@ -94,8 +130,18 @@ void do_avg(const char *arg1, const char *arg2, char *output)
  */
 void do_cursor(const char *arg1, char *output)
 {
-
-	snprintf(output, MAX_OUTPUT, "Not implemented.");
+	int *arr1;
+	arr1 = getGrid(arg1);
+	if (arr1 == NULL)
+	{
+		snprintf(output, MAX_OUTPUT, "Invalid Cursor Position.");
+	}
+	else
+	{
+		ws_curr.currentCursor.column = arr1[0];
+		ws_curr.currentCursor.row = arr1[1];
+		snprintf(output, MAX_OUTPUT, "Cursor Set.");
+	}
 }
 
 /*
@@ -127,21 +173,22 @@ void do_new(const char *arg1, const char *arg2, char *output)
 
 	char *chk;
 	int cols = strtol(arg1, &chk, 10);
-	if (chk != "")
+	if (strcmp(chk, "") != 0)
 	{
 		snprintf(output, MAX_OUTPUT, "Input is invalid");
+		return;
 	}
 
 	int rows = strtol(arg2, &chk, 10);
-	if (chk != "")
+	if (strcmp(chk, "") != 0)
 	{
 		snprintf(output, MAX_OUTPUT, "Input is invalid");
+		return;
 	}
-
 	if (ws_new(cols, rows) == NULL)
 		snprintf(output, MAX_OUTPUT, "Input is invalid");
 	else
-		snprintf(output, MAX_OUTPUT, "New Worksheet Created");
+		snprintf(output, MAX_OUTPUT, "\nNew worksheet created with %s columns and %s rows.", arg1, arg2); /* output message */
 }
 
 /*
@@ -152,8 +199,18 @@ void do_new(const char *arg1, const char *arg2, char *output)
  */
 void do_prec(const char *arg1, char *output)
 {
-
-	snprintf(output, MAX_OUTPUT, "Not implemented.");
+	if (arg1 != NULL && checkInt(arg1) == 1)
+	{
+		char *chk;
+		int prec = strtol(arg1, &chk, 10);
+		viewport_set_cellprec(prec);
+		snprintf(output, MAX_OUTPUT, "Cell Precision was set to %s", arg1);
+	}
+	else
+	{
+		snprintf(output, MAX_OUTPUT, "Input was Invalid\n");
+	}
+	
 }
 
 /*
@@ -177,8 +234,29 @@ void do_save(const char *arg1, char *output)
  */
 void do_set(const char *arg1, const char *arg2, char *output)
 {
+	/* wrong input validation */
+	if (strlen(arg1) == 1 || !isalpha(arg1[0]) || !checkInt(arg1 + 1))
+	{ /* check for cell length, alphabet and integer */
+		snprintf(output, MAX_OUTPUT, "\nInvalid cell value.");
+		return;
+	}
+
+	/* out of range validation */
+	int alpha1 = toupper(arg1[0]) - NUM_ALPHA_DIFF, num1 = atoi(&arg1[1]); /* seperate cell value into alphabet and num */
+	if (alpha1 > ws_curr.cols - 1 || num1 > ws_curr.rows || num1 == 0)
+	{
+		snprintf(output, MAX_OUTPUT, "\nCell value out of range.");
+		return;
+	}
+
 	int *arr1;
 	arr1 = getGrid(arg1);
+	if (arg2 == NULL)
+	{
+		strcpy(ws_curr.sheet[arr1[0]][arr1[1]], ""); /* erase */
+		snprintf(output, MAX_OUTPUT, "\n%s cell is erased.", arg1);
+		return;
+	}
 	if (arr1 == NULL || arg2 == 0x0)
 	{
 		snprintf(output, MAX_OUTPUT, "Input was invalid");
@@ -187,7 +265,8 @@ void do_set(const char *arg1, const char *arg2, char *output)
 	{
 		strcpy(ws_curr.sheet[arr1[0]][arr1[1]], arg2);
 	}
-	
+
+	snprintf(output, MAX_OUTPUT, "\nCell %s set to %s.", arg1, arg2); /* output message */
 }
 
 /*
@@ -199,8 +278,68 @@ void do_set(const char *arg1, const char *arg2, char *output)
  */
 void do_sum(const char *arg1, const char *arg2, char *output)
 {
+	/* wrong input validation */
+	if (arg2 == NULL)
+	{
+		snprintf(output, MAX_OUTPUT, "\nSecond parameter cannot be empty.");
+		return;
+	}
+	if (strlen(arg1) == 1 || strlen(arg2) == 1 ||
+		!isalpha(arg1[0]) || !isalpha(arg2[0]) || /* check for alphabet */
+		!checkInt(arg1 + 1) || !checkInt(arg2 + 1))
+	{ /* check for int */
+		snprintf(output, MAX_OUTPUT, "\nInvalid cell value.");
+		return;
+	}
 
-	snprintf(output, MAX_OUTPUT, "Not implemented.");
+	/* seperate cell value into alphabet and num */
+	int alpha1 = toupper(arg1[0]) - NUM_ALPHA_DIFF, alpha2 = toupper(arg2[0]) - NUM_ALPHA_DIFF, /* change alphabet to int */
+		num1 = atoi(&arg1[1]), num2 = atoi(&arg2[1]);
+
+	/* out of range validation */
+	if (alpha1 > ws_curr.cols - 1 || alpha2 > ws_curr.cols - 1 ||
+		num1 > ws_curr.rows || num2 > ws_curr.rows ||
+		num1 == 0 || num2 == 0)
+	{ /* check for 0th row (eg. A0) */
+		snprintf(output, MAX_OUTPUT, "\ncell value out of range.");
+		return;
+	}
+
+	/* sort alphabet & num from smallest to biggest */
+	int colStart = alpha1, colEnd = alpha2, rowStart = num1, rowEnd = num2;
+	if (alpha2 < alpha1)
+	{
+		colStart = alpha2;
+		colEnd = alpha1;
+	}
+	if (num2 < num1)
+	{
+		rowStart = num2;
+		rowEnd = num1;
+	}
+
+	/* sum all int cells up */
+	float sum = 0;
+	int num = 0;
+	for (int col = colStart; col < colEnd + 1; col++)
+	{
+		for (int row = rowStart - 1; row < (rowEnd - 1) + 1; row++)
+		{ /* num-1 because array start from 0 */
+			if (checkInt(ws_curr.sheet[col][row]))
+			{ /* check if char array contain all int */
+				//printf("|ENTER [%d][%d] = '%s'|\n", col, row, ws_curr.sheet[col][row]);
+				sum += atof(ws_curr.sheet[col][row]); /* convert char array to int and add to sum */
+				num++;
+			}
+		}
+	}
+
+	/* calculation for AVG command */
+	if (num == 0) /* anything divide by 0 will give you error */
+		num = 1;
+	AVERAGE = sum / num; /* calculation for AVG command */
+
+	snprintf(output, MAX_OUTPUT, "\nSum of %s to %s is %f.", arg1, arg2, sum); /* output message */
 }
 
 /*
@@ -211,8 +350,13 @@ void do_sum(const char *arg1, const char *arg2, char *output)
  */
 void do_width(const char *arg1, char *output)
 {
-
-	snprintf(output, MAX_OUTPUT, "Not implemented.");
+	if (arg1 != NULL && checkInt(arg1) == 1)
+	{
+		char *chk;
+		int width = strtol(arg1, &chk, 10);
+		viewport_set_cellwidth(width);
+	}
+	
 }
 
 /*
@@ -243,4 +387,29 @@ int *getGrid(const char *arg)
 		arr[1] = row - 1;
 		return arr;
 	}
+}
+
+/*
+ * Check if char array contain all int.
+ * Input:
+ *   arg - cell char array.
+ *
+ * Returns:
+ *   int - if char array not all int return 0, else return 1.
+*/
+int checkInt(const char *arg)
+{
+	int len = strlen(arg);
+	if (len == 0) /* if nothing inside cell, return 0 */
+		return 0;
+
+	int checkDot = 0; /* false */
+	for (int i = 0; i < len; i++)
+	{
+		if (i > 0 && arg[i] == '.' && checkDot == 0) /* at least a digit before '.' */
+			checkDot = 1;							 /* true */
+		else if (!isdigit(arg[i]))					 /* if cell consist of a alphabet, return 0*/
+			return 0;
+	}
+	return 1; /* char array contain all int, return 1 */
 }

@@ -17,7 +17,8 @@
  /*
   * Main loop.
   */
-int main(char *argv[], int argc) {
+int main(int argc, char *argv[]) {
+
 	int num_tokens;				/* the number of tokens in the input */
 	char command[MAX_INPUT];	/* buffer for holding the command */
 	char arg1[MAX_INPUT];		/* buffer for holding the first argument */
@@ -37,8 +38,10 @@ int main(char *argv[], int argc) {
 		printf("%s\n", output);
 	
 		/* read a line of input */
-		printf("? ");
-		num_tokens = lscanf("%s%s%s", command, arg1, arg2);
+		do {
+			printf("? ");
+			num_tokens = lscanf("%s%s%s", command, arg1, arg2);
+		} while (num_tokens < 1);
 		
 		if (num_tokens == 1) {
 			/* command with no argument */
