@@ -103,7 +103,7 @@ void do_avg(const char *arg1, const char *arg2, char *output)
 	int *arr1 = getGrid(arg1);
 	if (arr1 == NULL)
 	{
-		snprintf(output, MAX_OUTPUT, "\nCell out of range.");
+		snprintf(output, MAX_OUTPUT, "\nFirst Argument was Invalid.");
 		return;
 	}
 	int botCol = arr1[0];
@@ -113,7 +113,7 @@ void do_avg(const char *arg1, const char *arg2, char *output)
 	int *arr2 = getGrid(arg2);
 	if (arr2 == NULL)
 	{
-		snprintf(output, MAX_OUTPUT, "\nCell out of range.");
+		snprintf(output, MAX_OUTPUT, "\nSecond Argument was Invalid.");
 		return;
 	}
 	if (arr2[0] < botCol)
@@ -462,7 +462,7 @@ void do_sum(const char *arg1, const char *arg2, char *output)
 		num1 > ws_curr.rows || num2 > ws_curr.rows ||
 		num1 == 0 || num2 == 0)
 	{ /* check for 0th row (eg. A0) */
-		snprintf(output, MAX_OUTPUT, "\ncell value out of range.");
+		snprintf(output, MAX_OUTPUT, "\nCell value out of range.");
 		return;
 	}
 
@@ -516,7 +516,13 @@ void do_width(const char *arg1, char *output)
 		char *chk;
 		int width = strtol(arg1, &chk, 10);
 		viewport_set_cellwidth(width);
+		snprintf(output, MAX_OUTPUT, "Width set to %s", arg1);
 	}
+	else
+	{
+		snprintf(output, MAX_OUTPUT, "Invalid Width");
+	}
+	
 }
 
 /*
