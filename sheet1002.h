@@ -29,8 +29,8 @@
 #define WS_DATA_TYPE_FLOAT 2
 
 /* student's define */
-#define MAX_COLS 26
-#define NUM_ALPHA_DIFF 65
+#define MAX_COLS 26 //26 letters of the alphabet
+#define NUM_ALPHA_DIFF 65 //Represemts 'A'
 
 /* a structure for representing a worksheet */
 typedef struct
@@ -52,37 +52,37 @@ int lscanf(const char *format, ...);
 
 /* functions defined in commands.c */
 int do_command(const char *command, const char *arg1, const char *arg2, char *output);
-void do_avg(const char *arg1, const char *arg2, char *output); //needs mods to check grid
-void do_cursor(const char *arg1, char *output);				   //DONE
-void do_load(const char *arg1, char *output);				   //DONE
-void do_new(const char *arg1, const char *arg2, char *output); //DONE
-void do_prec(const char *arg1, char *output);				   //DONE
-void do_save(const char *arg1, char *output);				   //DONE
-void do_set(const char *arg1, const char *arg2, char *output); //DONE
-void do_sum(const char *arg1, const char *arg2, char *output); //needs modification
-void do_width(const char *arg1, char *output);				   //DONE
+void do_avg(const char *arg1, const char *arg2, char *output);
+void do_cursor(const char *arg1, char *output);				  
+void do_load(const char *arg1, char *output);				  
+void do_new(const char *arg1, const char *arg2, char *output);
+void do_prec(const char *arg1, char *output);				  
+void do_save(const char *arg1, char *output);				  
+void do_set(const char *arg1, const char *arg2, char *output);
+void do_sum(const char *arg1, const char *arg2, char *output);
+void do_width(const char *arg1, char *output);				  
 /* student's function defined in commands.c */
 int *getGrid(const char *arg);
 int checkInt(const char *);
 
 /* functions defined in viewport.c */
-void viewport_display(int term_cols, int term_rows); //DONE
-int viewport_get_cellprec(void);					 //DONE
-void viewport_set_cellprec(int prec);				 //DONE
-void viewport_set_cellwidth(int width);				 //DONE
-void viewport_set_cursor(int col, int row);			 //DONE
-WORKSHEET *viewport_get_worksheet(void);			 //DONE
-void viewport_set_worksheet(WORKSHEET *ws);			 //DONE
+void viewport_display(int term_cols, int term_rows); 
+int viewport_get_cellprec(void);					 
+void viewport_set_cellprec(int prec);				 
+void viewport_set_cellwidth(int width);				 
+void viewport_set_cursor(int col, int row);			 
+WORKSHEET *viewport_get_worksheet(void);			 
+void viewport_set_worksheet(WORKSHEET *ws);			 
 
 /* functions defined in worksheet.c */
-float ws_cell_as_float(WORKSHEET *ws, int col, int row);
-char *ws_cell_as_string(WORKSHEET *ws, int col, int row, int width, int prec, char *buf);
-int ws_guess_data_type(const char *value);
+float ws_cell_as_float(WORKSHEET *ws, int col, int row); //unused
+char *ws_cell_as_string(WORKSHEET *ws, int col, int row, int width, int prec, char *buf); //unused
+int ws_guess_data_type(const char *value); //unused
 void ws_free(WORKSHEET *ws);
 WORKSHEET *ws_new(int cols, int rows);
-int ws_read_csv(WORKSHEET *ws, FILE *f);
+int ws_read_csv(WORKSHEET *ws, FILE *f); //unused
 void ws_set(WORKSHEET *ws, int col, int row, const char *value);
-int ws_write_csv(WORKSHEET *ws, FILE *f);
+int ws_write_csv(WORKSHEET *ws, FILE *f); //unused
 
 void test();
 

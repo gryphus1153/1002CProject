@@ -132,7 +132,7 @@ void do_avg(const char *arg1, const char *arg2, char *output)
 	{
 		topRow = arr2[1];
 	}
-	double sum = 0;
+	float sum = 0;
 	int num = 0;
 	for (int r = botRow; r <= topRow; r++)
 	{
@@ -424,11 +424,11 @@ void do_set(const char *arg1, const char *arg2, char *output)
 		snprintf(output, MAX_OUTPUT, "First parameter cannot be empty.");
 		return;
 	}
-	if (arg2 == NULL)
-	{
-		snprintf(output, MAX_OUTPUT, "Second parameter cannot be empty.");
-		return;
-	}
+	//if (arg2 == NULL)
+	//{
+	//	snprintf(output, MAX_OUTPUT, "Second parameter cannot be empty.");
+	//	return;
+	//}
 	if (strlen(arg1) == 1 || !isalpha(arg1[0]) || !checkInt(arg1 + 1))
 	{ /* check for cell length, alphabet and integer */
 		snprintf(output, MAX_OUTPUT, "Invalid cell value.");
@@ -514,7 +514,7 @@ void do_sum(const char *arg1, const char *arg2, char *output)
 	}
 
 	/* sum all int cells up */
-	double sum = 0;
+	float sum = 0;
 	int num = 0;
 	for (int col = colStart; col < colEnd + 1; col++)
 	{
@@ -620,7 +620,7 @@ int checkInt(const char *arg)
 	//}
 	//return 1; /* char array contain all int, return 1 */
 	char *chk;
-	double num = strtod(arg, &chk);
+	float num = strtof(arg, &chk);
 	if (strcmp(chk, "") != 0 || (num == 0.0 && strlen(arg) == 0))
 	{
 		return 0;
