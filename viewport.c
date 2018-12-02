@@ -52,7 +52,7 @@ void viewport_display(int term_cols, int term_rows)
 		}
 		else
 		{
-			cols = worksheet->cols + cursorCols;
+			cols = worksheet->cols;
 		}
 
 		//Setting the number of rows that are going to be in the viewport
@@ -62,7 +62,7 @@ void viewport_display(int term_cols, int term_rows)
 		}
 		else
 		{
-			rows = worksheet->rows + cursorRows;
+			rows = worksheet->rows;
 		}
 
 		//this whole chunk is printing
@@ -72,10 +72,10 @@ void viewport_display(int term_cols, int term_rows)
 			printf("%-*c", width, col + 'A');
 		}
 		printf("\n");
-		for (i = cursorRows; i < cols; i++)
+		for (i = cursorRows; i < rows; i++)
 		{
 			printf("%-4d", i + 1); // row number
-			for (j = cursorCols; j < rows; j++)
+			for (j = cursorCols; j < cols; j++)
 			{
 				//convert ascii to float
 				if (atof(worksheet->sheet[j][i]) != 0)

@@ -100,26 +100,74 @@ void do_avg(const char *arg1, const char *arg2, char *output)
 		snprintf(output, MAX_OUTPUT, "\nSecond parameter cannot be empty.");
 		return;
 	}
-	if (strlen(arg1) == 1 || strlen(arg2) == 1 ||
-		!isalpha(arg1[0]) || !isalpha(arg2[0]) || /* check for alphabet */
-		!checkInt(arg1 + 1) || !checkInt(arg2 + 1))
-	{ /* check for int */
-		snprintf(output, MAX_OUTPUT, "\nInvalid cell value.");
+	int *arr1 = getGrid(arg1);
+	if (arr1 == NULL)
+	{
+		snprintf(output, MAX_OUTPUT, "\nCell out of range.");
 		return;
 	}
+	int botCol = arr1[0];
+	int topCol = arr1[0];
+	int botRow = arr1[1];
+	int topRow = arr1[1];
+	int *arr2 = getGrid(arg2);
+	if (arr2 == NULL)
+	{
+		snprintf(output, MAX_OUTPUT, "\nCell out of range.");
+		return;
+	}
+	if (arr2[0] < botCol)
+	{
+		botCol = arr2[0];
+	}
+	if (arr2[0] > topCol)
+	{
+		topCol = arr2[0];
+	}
+	if (arr2[1] < botRow)
+	{
+		botRow = arr2[1];
+	}
+	if (arr2[1] > topRow)
+	{
+		topRow = arr2[1];
+	}
+	double sum = 0;
+	int num = 0;
+	for (int r = botRow; r <= topRow; r++)
+	{
+		for (int c = botCol; c <= topCol; c++)
+		{
+			if (checkInt(ws_curr.sheet[c][r]))
+			{ /* check if char array contain all int */
+				//printf("|ENTER [%d][%d] = '%s'|\n", col, row, ws_curr.sheet[col][row]);
+				sum += atof(ws_curr.sheet[c][r]); /* convert char array to int and add to sum */
+				num++;
+			}
+		}
+	}
+	snprintf(output, MAX_OUTPUT, "Average of %s to %s is %f.", arg1, arg2, sum/num);
 
-	/* seperate cell value into alphabet and num */
-	int alpha1 = toupper(arg1[0]) - NUM_ALPHA_DIFF, alpha2 = toupper(arg2[0]) - NUM_ALPHA_DIFF, /* change alphabet to int */
-		num1 = atoi(&arg1[1]), num2 = atoi(&arg2[1]);
+	//if (strlen(arg1) == 1 || strlen(arg2) == 1 ||
+	//	!isalpha(arg1[0]) || !isalpha(arg2[0]) || /* check for alphabet */
+	//	!checkInt(arg1 + 1) || !checkInt(arg2 + 1))
+	//{ /* check for int */
+	//	snprintf(output, MAX_OUTPUT, "\nInvalid cell value.");
+	//	return;
+	//}
+	//
+	///* seperate cell value into alphabet and num */
+	//int alpha1 = toupper(arg1[0]) - NUM_ALPHA_DIFF, alpha2 = toupper(arg2[0]) - NUM_ALPHA_DIFF, /* change alphabet to int */
+	//	num1 = atoi(&arg1[1]), num2 = atoi(&arg2[1]);
 
 	/* out of range validation */
-	if (alpha1 > ws_curr.cols - 1 || alpha2 > ws_curr.cols - 1 ||
-		num1 > ws_curr.rows || num2 > ws_curr.rows ||
-		num1 == 0 || num2 == 0)
-	{ /* check for 0th row (eg. A0) */
-		snprintf(output, MAX_OUTPUT, "\ncell value out of range.");
-		return;
-	}
+	//if (alpha1 > ws_curr.cols - 1 || alpha2 > ws_curr.cols - 1 ||
+	//num1 > ws_curr.rows || num2 > ws_curr.rows ||
+	//num1 == 0 || num2 == 0)
+	//{ /* check for 0th row (eg. A0) */
+	//	snprintf(output, MAX_OUTPUT, "\ncell value out of range.");
+	//	return;
+	//}
 }
 
 /*
@@ -163,87 +211,70 @@ void do_load(const char *arg1, char *output)
 	FILE *f = fopen(arg1, "rb");
 
 	//return if the program could not open the csv file
-	if (f == NULL) {
+	if (f == NULL)
+	{
 		snprintf(output, MAX_OUTPUT, "Unable to load file. \nEnsure file exists and name does not contain spaces.\n");
 		return;
 	}
 
 	//Check the maximum number of rows and columns
 	int rows = 0, cols = 0;
-	char ch[99999];
-	fscanf(f, "%s", &ch);
+	char ch[MAX_WORD * MAX_COLS + 1];
+	fscanf(f, "%s", ch);
 	while (!feof(f))
 	{
 		rows++;
-		char * pch;
+		char *pch;
 		int col = 0;
-		
+
 		//Check all rows for maximum number of columns, delimited by comma
-		pch = strchr(&ch, ',');
+		pch = strchr(ch, ',');
 		while (pch != NULL)
 		{
 			col++;
 			pch = strchr(pch + 1, ',');
 		}
-		if (ch != '\n')
-				col++;
+		col++;
 		if (cols < col)
 			cols = col;
-		fscanf(f, "%s", &ch);
+		fscanf(f, "%s", ch);
 	}
 
 	//create a new worksheet
-	WORKSHEET new;
-	new.cols = cols;
-	new.rows = rows;
-	char*** sheet = (char ***)malloc(sizeof(char ***) * cols);
+	ws_new(cols, rows);
 
-	//create a dynamic memory allocation for each cell
-	for (int c = 0; c < cols; c++)
-	{
-		sheet[c] = (char **)malloc(sizeof(char *) * rows);
-		for (int r = 0; r < rows; r++)
-		{
-			sheet[c][r] = (char *)calloc(MAX_WORD, sizeof(char));
-		}
-	}
-	
 	//to load data and write into sheet
 	rewind(f); //re-initialize the file pointer
 	for (int r = 0; r < rows; r++)
 	{
-		fscanf(f, "%s", &ch);
+		fscanf(f, "%s", ch);
 		const char tok[] = ",";
-		char * tmp = (char *)ch;
-		char * teee = (char *)tmp;
+		char *tmp = (char *)ch;
+		char *teee = (char *)tmp;
 		size_t count;
-		for (count = 0; tmp[count]; tmp[count] == tok[0] ? count++ : *tmp++) {
+		for (count = 0; tmp[count]; tmp[count] == tok[0] ? count++ : *tmp++)
+		{
 			//Empty loop body.
 		}
 		tmp = (char *)ch;
 		//copy each word into cell, delimited by comma
-		for (size_t i = 0, l = 0; i < count + 1; i++) {
+		for (size_t i = 0, l = 0; i < count + 1; i++)
+		{
 			l = strcspn(tmp, tok);
 			teee = (char *)tmp;
 			teee[l] = '\0';
-			strcpy(sheet[i][r], teee);
-	
+			strcpy(ws_curr.sheet[i][r], teee);
+
 			tmp += sizeof(char) * (l + 1);
 		}
 	}
-
-	//save the content to ws_curr
-	new.sheet = sheet;
-	ws_curr = new;
-
 	//close csv file
 	fclose(f);
 
 	//Output: Sheet Loaded
 	snprintf(output, MAX_OUTPUT, "\n\nSheet Loaded.\n");
 
-	return &ws_curr;
-	   	  		
+	return;
 }
 
 /*
@@ -300,7 +331,6 @@ void do_prec(const char *arg1, char *output)
 	{
 		snprintf(output, MAX_OUTPUT, "Input was Invalid\n");
 	}
-	
 }
 
 /*
@@ -321,7 +351,8 @@ void do_save(const char *arg1, char *output)
 	//create a csv file
 	FILE *f = fopen(arg1, "wb+");
 	//return if the program could not create the csv file
-	if (f == NULL) {
+	if (f == NULL)
+	{
 		snprintf(output, MAX_OUTPUT, "Unable to save file.\nEnsure file is not opened in another program.\n");
 		return;
 	}
@@ -329,7 +360,7 @@ void do_save(const char *arg1, char *output)
 	//check the current number of rows and columns
 	int rows = ws_curr.rows;
 	int cols = ws_curr.cols;
-	
+
 	//write data into the csv file
 	for (int r = 0; r < rows; r++)
 	{
@@ -337,7 +368,7 @@ void do_save(const char *arg1, char *output)
 		{
 			fprintf(f, ws_curr.sheet[c][r]);
 			//insert comma as long as it is not the last column
-			if (c != cols-1) 
+			if (c != cols - 1)
 				fprintf(f, ",");
 		}
 		//insert a newline as long as it is not the last row
@@ -449,7 +480,7 @@ void do_sum(const char *arg1, const char *arg2, char *output)
 	}
 
 	/* sum all int cells up */
-	float sum = 0;
+	double sum = 0;
 	int num = 0;
 	for (int col = colStart; col < colEnd + 1; col++)
 	{
@@ -486,7 +517,6 @@ void do_width(const char *arg1, char *output)
 		int width = strtol(arg1, &chk, 10);
 		viewport_set_cellwidth(width);
 	}
-	
 }
 
 /*
@@ -529,17 +559,25 @@ int *getGrid(const char *arg)
 */
 int checkInt(const char *arg)
 {
-	int len = strlen(arg);
-	if (len == 0) /* if nothing inside cell, return 0 */
-		return 0;
-
-	int checkDot = 0; /* false */
-	for (int i = 0; i < len; i++)
+	//int len = strlen(arg);
+	//if (len == 0) /* if nothing inside cell, return 0 */
+	//	return 0;
+	//
+	//int checkDot = 0; /* false */
+	//for (int i = 0; i < len; i++)
+	//{
+	//	if (i > 0 && arg[i] == '.' && checkDot == 0) /* at least a digit before '.' */
+	//		checkDot = 1;							 /* true */
+	//	else if (!isdigit(arg[i]))					 /* if cell consist of a alphabet, return 0*/
+	//		return 0;
+	//}
+	//return 1; /* char array contain all int, return 1 */
+	char *chk;
+	double num = strtod(arg, &chk);
+	if (strcmp(chk, "") != 0 || (num == 0.0 && strlen(arg) == 0))
 	{
-		if (i > 0 && arg[i] == '.' && checkDot == 0) /* at least a digit before '.' */
-			checkDot = 1;							 /* true */
-		else if (!isdigit(arg[i]))					 /* if cell consist of a alphabet, return 0*/
-			return 0;
+		return 0;
 	}
-	return 1; /* char array contain all int, return 1 */
+	else
+		return 1;
 }
