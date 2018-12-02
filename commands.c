@@ -225,8 +225,9 @@ void do_load(const char *arg1, char *output)
 	//Check the maximum number of rows and columns
 	int rows = 0, cols = 0;
 	char ch[MAX_WORD * MAX_COLS + 1];
-	fscanf(f, "%s", ch);
-	while (!feof(f))
+	//fgets(f, MAX_WORD*MAX_COLS + 1, f);
+	//fscanf(f, "%s", ch);
+	while (fgets(ch, MAX_WORD * MAX_COLS + 1, f) != NULL)
 	{
 		rows++;
 		char *pch;
@@ -242,9 +243,13 @@ void do_load(const char *arg1, char *output)
 		col++;
 		if (cols < col)
 			cols = col;
-		fscanf(f, "%s", ch);
+		//fscanf(f, "%s", ch);
 	}
-
+	if (cols > MAX_COLS)
+	{
+		snprintf(output, MAX_OUTPUT, "File has too many columns");
+		return;
+	}
 	//create a new worksheet
 	ws_new(cols, rows);
 
@@ -252,7 +257,10 @@ void do_load(const char *arg1, char *output)
 	rewind(f); //re-initialize the file pointer
 	for (int r = 0; r < rows; r++)
 	{
-		fscanf(f, "%s", ch);
+		fgets(ch, MAX_WORD * MAX_COLS + 1, f);
+		char *pos;
+		if ((pos=strchr(ch, '\n')) != NULL)
+    	*pos = '\0';
 		const char tok[] = ",";
 		char *tmp = (char *)ch;
 		char *teee = (char *)tmp;
@@ -268,6 +276,10 @@ void do_load(const char *arg1, char *output)
 			l = strcspn(tmp, tok);
 			teee = (char *)tmp;
 			teee[l] = '\0';
+			if (strchr(teee, ' '))
+			{
+				strcpy(teee, "\0");
+			}
 			strcpy(ws_curr.sheet[i][r], teee);
 
 			tmp += sizeof(char) * (l + 1);
@@ -573,7 +585,7 @@ int *getGrid(const char *arg)
 	char *chk;
 	int row = strtol(arg, &chk, 10);
 
-	if (row == 0x0 || *chk != 0x0 || col > ws_curr.cols || row > ws_curr.rows || col < 0 || row  < 0)
+	if (row == 0x0 || *chk != 0x0 || col > ws_curr.cols || row > ws_curr.rows || col < 0 || row < 0)
 		return NULL;
 	else
 	{
