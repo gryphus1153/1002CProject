@@ -49,7 +49,7 @@ int do_command(const char *command, const char *arg1, const char *arg2, char *ou
 		return 0;
 	}
 	//if (arg1 == NULL) { /* validation for first parameter */
-	//	snprintf(output, MAX_OUTPUT, "\nFirst parameter cannot be empty.");
+	//	snprintf(output, MAX_OUTPUT, "First parameter cannot be empty.");
 	//	return 0;
 	//}
 
@@ -92,18 +92,18 @@ void do_avg(const char *arg1, const char *arg2, char *output)
 	/* wrong input validation */
 	if (arg1 == NULL)
 	{
-		snprintf(output, MAX_OUTPUT, "\nFirst parameter cannot be empty.");
+		snprintf(output, MAX_OUTPUT, "First parameter cannot be empty.");
 		return;
 	}
 	if (arg2 == NULL)
 	{
-		snprintf(output, MAX_OUTPUT, "\nSecond parameter cannot be empty.");
+		snprintf(output, MAX_OUTPUT, "Second parameter cannot be empty.");
 		return;
 	}
 	int *arr1 = getGrid(arg1);
 	if (arr1 == NULL)
 	{
-		snprintf(output, MAX_OUTPUT, "\nFirst Argument was Invalid.");
+		snprintf(output, MAX_OUTPUT, "First Argument was Invalid.");
 		return;
 	}
 	int botCol = arr1[0];
@@ -113,7 +113,7 @@ void do_avg(const char *arg1, const char *arg2, char *output)
 	int *arr2 = getGrid(arg2);
 	if (arr2 == NULL)
 	{
-		snprintf(output, MAX_OUTPUT, "\nSecond Argument was Invalid.");
+		snprintf(output, MAX_OUTPUT, "Second Argument was Invalid.");
 		return;
 	}
 	if (arr2[0] < botCol)
@@ -152,7 +152,7 @@ void do_avg(const char *arg1, const char *arg2, char *output)
 	//	!isalpha(arg1[0]) || !isalpha(arg2[0]) || /* check for alphabet */
 	//	!checkInt(arg1 + 1) || !checkInt(arg2 + 1))
 	//{ /* check for int */
-	//	snprintf(output, MAX_OUTPUT, "\nInvalid cell value.");
+	//	snprintf(output, MAX_OUTPUT, "Invalid cell value.");
 	//	return;
 	//}
 	//
@@ -165,7 +165,7 @@ void do_avg(const char *arg1, const char *arg2, char *output)
 	//num1 > ws_curr.rows || num2 > ws_curr.rows ||
 	//num1 == 0 || num2 == 0)
 	//{ /* check for 0th row (eg. A0) */
-	//	snprintf(output, MAX_OUTPUT, "\ncell value out of range.");
+	//	snprintf(output, MAX_OUTPUT, "cell value out of range.");
 	//	return;
 	//}
 }
@@ -272,7 +272,7 @@ void do_load(const char *arg1, char *output)
 	fclose(f);
 
 	//Output: Sheet Loaded
-	snprintf(output, MAX_OUTPUT, "\n\nSheet Loaded.\n");
+	snprintf(output, MAX_OUTPUT, "Sheet Loaded.\n");
 
 	return;
 }
@@ -309,7 +309,7 @@ void do_new(const char *arg1, const char *arg2, char *output)
 	if (ws_new(cols, rows) == NULL)
 		snprintf(output, MAX_OUTPUT, "Input is invalid");
 	else
-		snprintf(output, MAX_OUTPUT, "\nNew worksheet created with %s columns and %s rows.", arg1, arg2); /* output message */
+		snprintf(output, MAX_OUTPUT, "New worksheet created with %s columns and %s rows.", arg1, arg2); /* output message */
 }
 
 /*
@@ -380,7 +380,7 @@ void do_save(const char *arg1, char *output)
 	fclose(f);
 
 	//output: File Saved.
-	snprintf(output, MAX_OUTPUT, "\n\nFile Saved.\n");
+	snprintf(output, MAX_OUTPUT, "File Saved.\n");
 
 	return;
 }
@@ -397,7 +397,7 @@ void do_set(const char *arg1, const char *arg2, char *output)
 	/* wrong input validation */
 	if (strlen(arg1) == 1 || !isalpha(arg1[0]) || !checkInt(arg1 + 1))
 	{ /* check for cell length, alphabet and integer */
-		snprintf(output, MAX_OUTPUT, "\nInvalid cell value.");
+		snprintf(output, MAX_OUTPUT, "Invalid cell value.");
 		return;
 	}
 
@@ -405,7 +405,7 @@ void do_set(const char *arg1, const char *arg2, char *output)
 	int alpha1 = toupper(arg1[0]) - NUM_ALPHA_DIFF, num1 = atoi(&arg1[1]); /* seperate cell value into alphabet and num */
 	if (alpha1 > ws_curr.cols - 1 || num1 > ws_curr.rows || num1 == 0)
 	{
-		snprintf(output, MAX_OUTPUT, "\nCell value out of range.");
+		snprintf(output, MAX_OUTPUT, "Cell value out of range.");
 		return;
 	}
 
@@ -414,7 +414,7 @@ void do_set(const char *arg1, const char *arg2, char *output)
 	if (arg2 == NULL)
 	{
 		strcpy(ws_curr.sheet[arr1[0]][arr1[1]], ""); /* erase */
-		snprintf(output, MAX_OUTPUT, "\n%s cell is erased.", arg1);
+		snprintf(output, MAX_OUTPUT, "%s cell is erased.", arg1);
 		return;
 	}
 	if (arr1 == NULL || arg2 == 0x0)
@@ -424,10 +424,10 @@ void do_set(const char *arg1, const char *arg2, char *output)
 	else
 	{
 		strcpy(ws_curr.sheet[arr1[0]][arr1[1]], arg2);
-		snprintf(output, MAX_OUTPUT, "\n\nInput Updated.\n");
+		snprintf(output, MAX_OUTPUT, "Input Updated.\n");
 	}
 
-	snprintf(output, MAX_OUTPUT, "\nCell %s set to %s.", arg1, arg2); /* output message */
+	snprintf(output, MAX_OUTPUT, "Cell %s set to %s.", arg1, arg2); /* output message */
 }
 
 /*
@@ -442,14 +442,14 @@ void do_sum(const char *arg1, const char *arg2, char *output)
 	/* wrong input validation */
 	if (arg2 == NULL)
 	{
-		snprintf(output, MAX_OUTPUT, "\nSecond parameter cannot be empty.");
+		snprintf(output, MAX_OUTPUT, "Second parameter cannot be empty.");
 		return;
 	}
 	if (strlen(arg1) == 1 || strlen(arg2) == 1 ||
 		!isalpha(arg1[0]) || !isalpha(arg2[0]) || /* check for alphabet */
 		!checkInt(arg1 + 1) || !checkInt(arg2 + 1))
 	{ /* check for int */
-		snprintf(output, MAX_OUTPUT, "\nInvalid cell value.");
+		snprintf(output, MAX_OUTPUT, "Invalid cell value.");
 		return;
 	}
 
@@ -462,7 +462,7 @@ void do_sum(const char *arg1, const char *arg2, char *output)
 		num1 > ws_curr.rows || num2 > ws_curr.rows ||
 		num1 == 0 || num2 == 0)
 	{ /* check for 0th row (eg. A0) */
-		snprintf(output, MAX_OUTPUT, "\nCell value out of range.");
+		snprintf(output, MAX_OUTPUT, "Cell value out of range.");
 		return;
 	}
 
@@ -500,7 +500,7 @@ void do_sum(const char *arg1, const char *arg2, char *output)
 		num = 1;
 	AVERAGE = sum / num; /* calculation for AVG command */
 
-	snprintf(output, MAX_OUTPUT, "\nSum of %s to %s is %f.", arg1, arg2, sum); /* output message */
+	snprintf(output, MAX_OUTPUT, "Sum of %s to %s is %f.", arg1, arg2, sum); /* output message */
 }
 
 /*
