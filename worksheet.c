@@ -90,6 +90,7 @@ int ws_guess_data_type(const char *value)
  */
 void ws_free(WORKSHEET *ws)
 {
+    //free the sheet
     if (ws != NULL)
     {
         for (int c = 0; c < ws->cols; c++)
@@ -102,8 +103,10 @@ void ws_free(WORKSHEET *ws)
         }
         free(ws->sheet);
     }
+    //reset the size of the sheet
     ws->cols = 0;
     ws->rows = 0;
+    //reset the cursor position
     currentCursor.row = 0;
     currentCursor.column = 0;
 }
@@ -124,7 +127,7 @@ WORKSHEET *ws_new(int cols, int rows)
     if (cols > MAX_COLS)
         return NULL;
     ws_free(&ws_curr);
-
+    //create new worksheet of variable size
     WORKSHEET new;
     new.cols = cols;
     new.rows = rows;

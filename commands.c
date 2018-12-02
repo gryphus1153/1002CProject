@@ -106,6 +106,8 @@ void do_avg(const char *arg1, const char *arg2, char *output)
 		snprintf(output, MAX_OUTPUT, "First Argument was Invalid.");
 		return;
 	}
+
+	//set the edges of the bounding box
 	int botCol = arr1[0];
 	int topCol = arr1[0];
 	int botRow = arr1[1];
@@ -132,6 +134,7 @@ void do_avg(const char *arg1, const char *arg2, char *output)
 	{
 		topRow = arr2[1];
 	}
+	//calculation of sum
 	float sum = 0;
 	int num = 0;
 	for (int r = botRow; r <= topRow; r++)
