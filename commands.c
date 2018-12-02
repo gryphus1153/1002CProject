@@ -261,6 +261,8 @@ void do_load(const char *arg1, char *output)
 		char *pos;
 		if ((pos=strchr(ch, '\n')) != NULL)
     	*pos = '\0';
+		if ((pos=strchr(ch, '\r')) != NULL)
+    	*pos = '\0';
 		const char tok[] = ",";
 		char *tmp = (char *)ch;
 		char *teee = (char *)tmp;
@@ -575,17 +577,18 @@ void do_width(const char *arg1, char *output)
  */
 int *getGrid(const char *arg)
 {
+	//check if its not in the (letter)(number format)
 	if (!(strlen(arg) >= 2 && isalpha(arg[0])))
 	{
 		return NULL;
 	}
 
-	int col = (int)toupper(arg[0]) - 65;
+	int col = (int)toupper(arg[0]) - 65;//get the column as int
 	arg++;
 	char *chk;
-	int row = strtol(arg, &chk, 10);
+	int row = strtol(arg, &chk, 10);//convert the number to row
 
-	if (row == 0x0 || *chk != 0x0 || col > ws_curr.cols || row > ws_curr.rows || col < 0 || row < 0)
+	if (row == 0x0 || *chk != 0x0 || col > ws_curr.cols || row > ws_curr.rows || col < 0 || row < 0)//check if out of range or invalid
 		return NULL;
 	else
 	{
@@ -621,7 +624,7 @@ int checkInt(const char *arg)
 	//return 1; /* char array contain all int, return 1 */
 	char *chk;
 	float num = strtof(arg, &chk);
-	if (strcmp(chk, "") != 0 || (num == 0.0 && strlen(arg) == 0))
+	if (strcmp(chk, "") != 0 || (num == 0.0 && strlen(arg) == 0))//Check for any leftover after strtof, (prevent 0 from being counted as invalid)
 	{
 		return 0;
 	}
