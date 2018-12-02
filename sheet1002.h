@@ -41,12 +41,9 @@ typedef struct
 
 typedef struct
 {
-	int cols; //columns
-	int rows; //rows
+	int cols;	  //columns
+	int rows;	  //rows
 	char ***sheet; //the actual worksheet
-	int cell_width; //width default size 5
-	int cell_prec; //precision default 0
-	cursor currentCursor;
 } WORKSHEET;
 
 /* functions defined in main.c */
@@ -89,6 +86,10 @@ int ws_write_csv(WORKSHEET *ws, FILE *f);
 
 void test();
 
-WORKSHEET ws_curr;
+WORKSHEET ws_curr; //CURRENT WORKSHEET
+
+int cell_width;   //width default size 5
+int cell_prec;	//precision default 0
+cursor currentCursor; //current cursor postition
 
 #endif

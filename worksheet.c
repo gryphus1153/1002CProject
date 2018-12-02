@@ -104,10 +104,8 @@ void ws_free(WORKSHEET *ws)
     }
     ws->cols = 0;
     ws->rows = 0;
-    ws->cell_width = 5;
-    ws->cell_prec = 0;
-    ws->currentCursor.row = 0;
-    ws->currentCursor.column = 0;
+    currentCursor.row = 0;
+    currentCursor.column = 0;
 }
 
 /*
@@ -130,10 +128,6 @@ WORKSHEET *ws_new(int cols, int rows)
     WORKSHEET new;
     new.cols = cols;
     new.rows = rows;
-    new.cell_width = 5;
-    new.cell_prec = 0;
-    new.currentCursor.row = 0;
-    new.currentCursor.column = 0;
     char ***sheet = (char ***)malloc(sizeof(char ***) * cols);
     for (int c = 0; c < cols; c++)
     {

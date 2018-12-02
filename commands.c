@@ -146,7 +146,7 @@ void do_avg(const char *arg1, const char *arg2, char *output)
 			}
 		}
 	}
-	snprintf(output, MAX_OUTPUT, "Average of %s to %s is %f.", arg1, arg2, sum/num);
+	snprintf(output, MAX_OUTPUT, "Average of %s to %s is %f.", arg1, arg2, sum / num);
 
 	//if (strlen(arg1) == 1 || strlen(arg2) == 1 ||
 	//	!isalpha(arg1[0]) || !isalpha(arg2[0]) || /* check for alphabet */
@@ -178,6 +178,11 @@ void do_avg(const char *arg1, const char *arg2, char *output)
  */
 void do_cursor(const char *arg1, char *output)
 {
+	if (arg1 == NULL)
+	{
+		snprintf(output, MAX_OUTPUT, "First parameter cannot be empty");
+		return;
+	}
 	int *arr1;
 	arr1 = getGrid(arg1);
 	if (arr1 == NULL)
@@ -186,8 +191,8 @@ void do_cursor(const char *arg1, char *output)
 	}
 	else
 	{
-		ws_curr.currentCursor.column = arr1[0];
-		ws_curr.currentCursor.row = arr1[1];
+		currentCursor.column = arr1[0];
+		currentCursor.row = arr1[1];
 		snprintf(output, MAX_OUTPUT, "Cursor Set.");
 	}
 }
@@ -203,7 +208,7 @@ void do_load(const char *arg1, char *output)
 	//check if there is no filename
 	if (arg1 == 0x0)
 	{
-		snprintf(output, MAX_OUTPUT, "No filename entered.\n");
+		snprintf(output, MAX_OUTPUT, "No filename entered.");
 		return;
 	}
 
@@ -213,7 +218,7 @@ void do_load(const char *arg1, char *output)
 	//return if the program could not open the csv file
 	if (f == NULL)
 	{
-		snprintf(output, MAX_OUTPUT, "Unable to load file. \nEnsure file exists and name does not contain spaces.\n");
+		snprintf(output, MAX_OUTPUT, "Unable to load file. Ensure file exists and name does not contain spaces.");
 		return;
 	}
 
@@ -272,7 +277,7 @@ void do_load(const char *arg1, char *output)
 	fclose(f);
 
 	//Output: Sheet Loaded
-	snprintf(output, MAX_OUTPUT, "Sheet Loaded.\n");
+	snprintf(output, MAX_OUTPUT, "Sheet Loaded.");
 
 	return;
 }
@@ -288,7 +293,7 @@ void do_new(const char *arg1, const char *arg2, char *output)
 {
 	if (arg1 == 0x0 || arg2 == 0x0)
 	{
-		snprintf(output, MAX_OUTPUT, "Input is invalid");
+		snprintf(output, MAX_OUTPUT, "A parameter was empty");
 		return;
 	}
 
@@ -296,18 +301,18 @@ void do_new(const char *arg1, const char *arg2, char *output)
 	int cols = strtol(arg1, &chk, 10);
 	if (strcmp(chk, "") != 0)
 	{
-		snprintf(output, MAX_OUTPUT, "Input is invalid");
+		snprintf(output, MAX_OUTPUT, "First parameter is invalid");
 		return;
 	}
 
 	int rows = strtol(arg2, &chk, 10);
 	if (strcmp(chk, "") != 0)
 	{
-		snprintf(output, MAX_OUTPUT, "Input is invalid");
+		snprintf(output, MAX_OUTPUT, "Second parameter is invalid");
 		return;
 	}
 	if (ws_new(cols, rows) == NULL)
-		snprintf(output, MAX_OUTPUT, "Input is invalid");
+		snprintf(output, MAX_OUTPUT, "Could not allocate memory to sheet");
 	else
 		snprintf(output, MAX_OUTPUT, "New worksheet created with %s columns and %s rows.", arg1, arg2); /* output message */
 }
@@ -324,12 +329,19 @@ void do_prec(const char *arg1, char *output)
 	{
 		char *chk;
 		int prec = strtol(arg1, &chk, 10);
-		viewport_set_cellprec(prec);
-		snprintf(output, MAX_OUTPUT, "Cell Precision was set to %s", arg1);
+		if (prec >= 0)
+		{
+			viewport_set_cellprec(prec);
+			snprintf(output, MAX_OUTPUT, "Cell Precision was set to %s", arg1);
+		}
+		else
+		{
+			snprintf(output, MAX_OUTPUT, "Precision cannot be be less than 0");
+		}
 	}
 	else
 	{
-		snprintf(output, MAX_OUTPUT, "Input was Invalid\n");
+		snprintf(output, MAX_OUTPUT, "Input was Invalid");
 	}
 }
 
@@ -344,7 +356,7 @@ void do_save(const char *arg1, char *output)
 	//check if there is no filename
 	if (arg1 == 0x0)
 	{
-		snprintf(output, MAX_OUTPUT, "No filename entered.\n");
+		snprintf(output, MAX_OUTPUT, "No filename entered.");
 		return;
 	}
 
@@ -353,7 +365,7 @@ void do_save(const char *arg1, char *output)
 	//return if the program could not create the csv file
 	if (f == NULL)
 	{
-		snprintf(output, MAX_OUTPUT, "Unable to save file.\nEnsure file is not opened in another program.\n");
+		snprintf(output, MAX_OUTPUT, "Unable to save file. Ensure file is not opened in another program.");
 		return;
 	}
 
@@ -380,7 +392,7 @@ void do_save(const char *arg1, char *output)
 	fclose(f);
 
 	//output: File Saved.
-	snprintf(output, MAX_OUTPUT, "File Saved.\n");
+	snprintf(output, MAX_OUTPUT, "File Saved.");
 
 	return;
 }
@@ -395,6 +407,16 @@ void do_save(const char *arg1, char *output)
 void do_set(const char *arg1, const char *arg2, char *output)
 {
 	/* wrong input validation */
+	if (arg1 == NULL)
+	{
+		snprintf(output, MAX_OUTPUT, "First parameter cannot be empty.");
+		return;
+	}
+	if (arg2 == NULL)
+	{
+		snprintf(output, MAX_OUTPUT, "Second parameter cannot be empty.");
+		return;
+	}
 	if (strlen(arg1) == 1 || !isalpha(arg1[0]) || !checkInt(arg1 + 1))
 	{ /* check for cell length, alphabet and integer */
 		snprintf(output, MAX_OUTPUT, "Invalid cell value.");
@@ -420,11 +442,11 @@ void do_set(const char *arg1, const char *arg2, char *output)
 	if (arr1 == NULL || arg2 == 0x0)
 	{
 		snprintf(output, MAX_OUTPUT, "Input was invalid");
+		return;
 	}
 	else
 	{
 		strcpy(ws_curr.sheet[arr1[0]][arr1[1]], arg2);
-		snprintf(output, MAX_OUTPUT, "Input Updated.\n");
 	}
 
 	snprintf(output, MAX_OUTPUT, "Cell %s set to %s.", arg1, arg2); /* output message */
@@ -460,7 +482,7 @@ void do_sum(const char *arg1, const char *arg2, char *output)
 	/* out of range validation */
 	if (alpha1 > ws_curr.cols - 1 || alpha2 > ws_curr.cols - 1 ||
 		num1 > ws_curr.rows || num2 > ws_curr.rows ||
-		num1 == 0 || num2 == 0)
+		num1 <= 0 || num2 <= 0)
 	{ /* check for 0th row (eg. A0) */
 		snprintf(output, MAX_OUTPUT, "Cell value out of range.");
 		return;
@@ -515,14 +537,21 @@ void do_width(const char *arg1, char *output)
 	{
 		char *chk;
 		int width = strtol(arg1, &chk, 10);
-		viewport_set_cellwidth(width);
-		snprintf(output, MAX_OUTPUT, "Width set to %s", arg1);
+
+		if (width > 0)
+		{
+			viewport_set_cellwidth(width);
+			snprintf(output, MAX_OUTPUT, "Column width set to %s", arg1);
+		}
+		else
+		{
+			snprintf(output, MAX_OUTPUT, "Width cannot be be less than 1");
+		}
 	}
 	else
 	{
 		snprintf(output, MAX_OUTPUT, "Invalid Width");
 	}
-	
 }
 
 /*
@@ -544,7 +573,7 @@ int *getGrid(const char *arg)
 	char *chk;
 	int row = strtol(arg, &chk, 10);
 
-	if (row == 0x0 || *chk != 0x0 || col > ws_curr.cols || row > ws_curr.rows)
+	if (row == 0x0 || *chk != 0x0 || col > ws_curr.cols || row > ws_curr.rows || col < 0 || row  < 0)
 		return NULL;
 	else
 	{

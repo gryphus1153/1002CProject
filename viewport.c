@@ -35,9 +35,14 @@ void viewport_display(int term_cols, int term_rows)
 	}
 	else
 	{
-		int cursorCols = worksheet->currentCursor.column;
-		int cursorRows = worksheet->currentCursor.row;
-		int width = worksheet->cell_width;
+		int cursorCols = currentCursor.column;
+		int cursorRows = currentCursor.row;
+		if (cell_width == 0)
+		{
+			cell_width = 5;
+		}
+		int width = cell_width;
+
 		int cols, rows, i, j;
 
 		int num_cols_in_vp = term_cols / width;
@@ -81,7 +86,7 @@ void viewport_display(int term_cols, int term_rows)
 				if (atof(worksheet->sheet[j][i]) != 0)
 				{
 					//format string to calculate length
-					snprintf(cellDisplay, MAX_WORD, "%*.*f", width, worksheet->cell_prec, atof(worksheet->sheet[j][i]));
+					snprintf(cellDisplay, MAX_WORD, "%*.*f", width, cell_prec, atof(worksheet->sheet[j][i]));
 					if (strlen(cellDisplay) > width)
 					{
 						(j == cols) ? (printf("%.*s\n", width, placeHolder)) : (printf("%.*s", width, placeHolder));
@@ -117,7 +122,7 @@ void viewport_display(int term_cols, int term_rows)
  */
 int viewport_get_cellprec(void)
 {
-	return worksheet->cell_prec;
+	return cell_prec;
 }
 
 /*
@@ -128,8 +133,7 @@ int viewport_get_cellprec(void)
  */
 void viewport_set_cellprec(int prec)
 {
-	if (worksheet != NULL)
-		worksheet->cell_prec = prec;
+	cell_prec = prec;
 }
 
 /*
@@ -140,8 +144,7 @@ void viewport_set_cellprec(int prec)
  */
 void viewport_set_cellwidth(int width)
 {
-	if (worksheet != NULL)
-		worksheet->cell_width = width;
+	cell_width = width;
 }
 
 /*
@@ -153,11 +156,8 @@ void viewport_set_cellwidth(int width)
  */
 void viewport_set_cursor(int col, int row)
 {
-	if (worksheet != NULL)
-	{
-		worksheet->currentCursor.column = col;
-		worksheet->currentCursor.row = row;
-	}
+	currentCursor.column = col;
+	currentCursor.row = row;
 }
 /*
  * Get a pointer to the worksheet currently being displayed.
