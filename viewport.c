@@ -128,7 +128,8 @@ int viewport_get_cellprec(void)
  */
 void viewport_set_cellprec(int prec)
 {
-	worksheet->cell_prec = prec;
+	if (worksheet != NULL)
+		worksheet->cell_prec = prec;
 }
 
 /*
@@ -139,7 +140,8 @@ void viewport_set_cellprec(int prec)
  */
 void viewport_set_cellwidth(int width)
 {
-	worksheet->cell_width = width;
+	if (worksheet != NULL)
+		worksheet->cell_width = width;
 }
 
 /*
@@ -151,8 +153,11 @@ void viewport_set_cellwidth(int width)
  */
 void viewport_set_cursor(int col, int row)
 {
-	worksheet->currentCursor.column = col;
-	worksheet->currentCursor.row = row;
+	if (worksheet != NULL)
+	{
+		worksheet->currentCursor.column = col;
+		worksheet->currentCursor.row = row;
+	}
 }
 /*
  * Get a pointer to the worksheet currently being displayed.

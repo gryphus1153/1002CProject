@@ -57,19 +57,19 @@ int lscanf(const char *format, ...);
 int do_command(const char *command, const char *arg1, const char *arg2, char *output);
 void do_avg(const char *arg1, const char *arg2, char *output); //needs mods to check grid
 void do_cursor(const char *arg1, char *output);				   //DONE
-void do_load(const char *arg1, char *output);				   //***SHIRLENE
+void do_load(const char *arg1, char *output);				   //DONE
 void do_new(const char *arg1, const char *arg2, char *output); //DONE
 void do_prec(const char *arg1, char *output);				   //DONE
-void do_save(const char *arg1, char *output);				   //***SHIRLENE
+void do_save(const char *arg1, char *output);				   //DONE
 void do_set(const char *arg1, const char *arg2, char *output); //DONE
 void do_sum(const char *arg1, const char *arg2, char *output); //needs modification
-void do_width(const char *arg1, char *output);				   //***CK
+void do_width(const char *arg1, char *output);				   //DONE
 /* student's function defined in commands.c */
 int *getGrid(const char *arg);
 int checkInt(const char *);
 
 /* functions defined in viewport.c */
-void viewport_display(int term_cols, int term_rows); //go through
+void viewport_display(int term_cols, int term_rows); //DONE
 int viewport_get_cellprec(void);					 //DONE
 void viewport_set_cellprec(int prec);				 //DONE
 void viewport_set_cellwidth(int width);				 //DONE
